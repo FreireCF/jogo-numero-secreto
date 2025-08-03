@@ -1,23 +1,67 @@
-let novaMensagem = document.querySelector('h1');
-novaMensagem.innerHTML = 'Hora do desafio';
+let numerosSorteados = [];
+let limite = 10;
+let numSecreto = gerarNumero();
+let cont=1;
 
-function botaoConsole(){
-  console.log('O botão foi clicado');
+function exibirTexto(tag, texto){
+  let campo = document.querySelector(tag);
+  campo.innerHTML = texto;
+  responsiveVoice.speak(texto, 'Brazilian Portuguese Female', {rate: 1});
 }
 
-function botaoAlert(){
-  alert('Eu amo JS');
+function mensagemInicial(){
+  let mensagemP = `Escolha um número entre 1 e ${limite}`;
+  exibirTexto('h1', 'Adivinhe o número secreto');
+  exibirTexto('p', mensagemP);
 }
 
-function botaoPrompt(){
-  let cidade = prompt('Qual cidade você mora?');
-  alert(`Estive em ${cidade} e lembrei de você`);
+function limparCampo(){
+  let campo = document.querySelector('input');
+  campo.value = '';
 }
 
-function botaoSoma(){
-  let num1 = parseInt(prompt('Digite o primeiro número: '));
-  let num2 = parseInt(prompt('Digite o segundo número: '));
-  let soma = parseInt(num1 + num2);
+function verificarChute() {
+  let chute = document.querySelector('input').value;
+  let palavra = cont > 1 ? 'tentativas' : 'tentativa';
 
-  alert(`A soma de ${num1} + ${num2} é igual a ${soma}`);
+  if(chute == numSecreto){
+    let mensagemVenceu = `Parabéns, você venceu com ${cont} ${palavra}!`;
+    exibirTexto('p', mensagemVenceu);
+    document.getElementById('reiniciar').removeAttribute('disabled');
+  } else {
+    if (numSecreto > chute){
+      exibirTexto('p', 'O número secreto é maior que '+chute);
+    } else {
+    exibirTexto('p', 'O número secreto é menor que '+chute);
+    }
+    cont++;
+    limparCampo();
+  }
 }
+
+function gerarNumero(){
+  let num = parseInt(Math.random() * limite + 1);
+  let quantidadeNumLista = numerosSorteados.length;
+
+  if(numerosSorteados.length == limite){
+    numerosSorteados = [];
+  }
+
+  if(numerosSorteados.includes(num)){
+    return gerarNumero();
+  } else {
+    numerosSorteados.push(num);
+    console.log(numerosSorteados);
+    return num;
+  }
+}
+
+function reiniciar(){
+  numSecreto = gerarNumero();
+  limparCampo();
+  cont = 1;
+  mensagemInicial();
+  document.getElementById('reiniciar').setAttribute('disabled', true);
+}
+
+mensagemInicial();
